@@ -20,13 +20,13 @@ VALUES
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES
-('Chelazon', 'Leroux', 2, null),
-('Gisele', 'Lullaby', 4, null),
-('Halal', 'Bae', 2, null),
-('Irma', 'Gerd', 3, null),
-('Jada', 'Shada-Hudson', 5, null),
-('Kimmy', 'Couture', 6, null),
-('Vivian', 'Vanderpuss', 8, null),
-('Brooke Lynn', 'Hytes', 7, null),
-('Traci', 'Melchor', 5, null),
-('Brad', 'Goreski', 1, null);
+('Chelazon', 'Leroux', 2, NULL),
+('Gisele', 'Lullaby', 4, NULL),
+('Halal', 'Bae', 2, NULL),
+('Irma', 'Gerd', 3, NULL),
+('Jada', 'Shada-Hudson', 5, NULL),
+('Kimmy', 'Couture', 6, NULL),
+('Vivian', 'Vanderpuss', 8, NULL),
+('Brooke Lynn', 'Hytes', 7, NULL),
+('Traci', 'Melchor', 5, NULL),
+('Brad', 'Goreski', 1, NULL);

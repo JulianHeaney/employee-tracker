@@ -71,10 +71,14 @@ function hr_menu() {
 // VIEW ALL EMPLOYEES
 function allEmployees() {
    console.log('VIEW ALL EMPLOYEES');
-   const query = "SELECT * FROM employee";
+   const query = `
+   SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary 
+   FROM employee e 
+   LEFT JOIN role r ON e.role_id = r.id 
+   LEFT JOIN department d ON r.department_id = d.id`;
    db.query(query, function (err, rows) {
       if (err) throw err;
-      console.table("All Employees:", rows);
+      console.table(rows);
       hr_menu();
    });
 }
@@ -98,7 +102,7 @@ function addEmployee() {
          {
             name: "manager_id",
             type: "input",
-            message: "What is the employee's manager ID?"
+            message: "What is the employee's manager ID?",
          },
          {
             name: "role",
@@ -126,11 +130,14 @@ function addEmployee() {
             manager_id: response.manager_id,
             role_id: role_id
          });
-         const query = "SELECT * FROM employee";
+         const query = `
+         SELECT e.id, e.first_name, e.last_name, r.title AS title, r.salary 
+         FROM employee e 
+         LEFT JOIN role r ON e.role_id = r.id`;
          db.query(query, function (err, rows) {
             if (err) throw err;
             console.log("New employee added to table!");
-            console.table("All Employees", rows);
+            console.table(rows);
             hr_menu();
          })
       })
@@ -146,7 +153,7 @@ function updateRole() {
          {
             name: "employeeName",
             type: "list",
-            message: "Select employee to update role.",
+            message: "Which employee's role do you want to update?",
             choices: function() {
                //console.log(rows);
                let emplChoices = [];
@@ -168,7 +175,7 @@ function updateRole() {
                {
                   name: "role",
                   type: "list",
-                  message: "What is the employee's new role?",
+                  message: "Which role do you want to assign the selected employee?",
                   choices: function() {
                      let roleChoices = [];
                      for (let n = 0; n < rows.length; n++) {
@@ -183,6 +190,11 @@ function updateRole() {
                //console.log(response);
                const newRole = response.role;
                console.log(newRole);
+
+               db.query(`
+               UPDATE employee e 
+               SET e.role_id = ?
+               WHERE `)
             })
          })
       })
@@ -192,7 +204,10 @@ function updateRole() {
 // VIEW ALL ROLES
 function allRoles() {
    console.log('VIEW ALL ROLES');
-   const query = "SELECT role.id, role.title, department.name AS department, role.salary FROM role LEFT JOIN department ON role.department_id = department.id";
+   const query = `
+   SELECT r.id, r.title, d.name AS department, r.salary 
+   FROM role r 
+   LEFT JOIN department d ON r.department_id = d.id`;
    db.query(query, function (err, rows) {
       if (err) throw err;
       console.table(rows);
@@ -245,7 +260,7 @@ function addRole() {
             db.query(query, function (err, rows) {
                if (err) throw err;
                console.log("New role added to table!");
-               console.table("All Roles", rows);
+               console.table(rows);
                hr_menu();
             });
          });
