@@ -7,9 +7,6 @@ A command line application to track employees. The user can select various promp
 
 Application Demo [here]()
 
-![ScreenShot]()
-
-
 ## Built With
 
 JavaSscript, NodeJS, Inquirer, MySQL2, console.table
