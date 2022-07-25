@@ -2,7 +2,6 @@ const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const consoleTable = require('console.table');
 
-
 // connect to database
 const db = mysql.createConnection({
    host: "localhost",
@@ -72,7 +71,7 @@ function hr_menu() {
 function allEmployees() {
    console.log('VIEW ALL EMPLOYEES');
    const query = `
-   SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary 
+   SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, e.manager_id 
    FROM employee e 
    LEFT JOIN role r ON e.role_id = r.id 
    LEFT JOIN department d ON r.department_id = d.id`;
@@ -109,6 +108,7 @@ function addEmployee() {
             type: "list",
             message: "What is the employee's role?",
             choices: function() {
+               // loop through role titles to generate choices
                let roleChoices = [];
                for (let i = 0; i < rows.length; i++) {
                   roleChoices.push(rows[i].title);
@@ -118,6 +118,7 @@ function addEmployee() {
          }
       ])
       .then(function (response) {
+         // assign role_id value based on user role selection
          let role_id;
          for (let n = 0; n < rows.length; n++) {
             if (rows[n].title == response.role) {
@@ -130,6 +131,7 @@ function addEmployee() {
             manager_id: response.manager_id,
             role_id: role_id
          });
+         // sql query to generate new employee
          const query = `
          SELECT e.id, e.first_name, e.last_name, r.title AS title, r.salary 
          FROM employee e 
@@ -156,17 +158,18 @@ function updateRole() {
             message: "Which employee's role do you want to update?",
             choices: function() {
                //console.log(rows);
+               // loop through employee table data to return first/last name options as choices
                let emplChoices = [];
-               for (let i = 0; i < rows.length; i++) {
-                  emplChoices.push(rows[i].first_name + " " + rows[i].last_name);
-               }
+               rows.forEach((rows) => {
+                  emplChoices.push(rows.first_name + ' ' + rows.last_name);
+               });
                //console.log(emplChoices);
                return emplChoices;
             }
          }
       ])
       .then(function (response) {
-         //console.log(response);
+         // employee variable to be used as input data in update query
          const employee = response.employeeName;
          //console.log(employee);
 
@@ -178,9 +181,10 @@ function updateRole() {
                   message: "Which role do you want to assign the selected employee?",
                   choices: function() {
                      let roleChoices = [];
-                     for (let n = 0; n < rows.length; n++) {
-                        roleChoices.push(rows[n].title);
-                     }
+                     // loop through role table data to return job title options as choices
+                    rows.forEach((rows) => {
+                     roleChoices.push(rows.title);
+                    });
                      //console.log(roleChoices);
                      return roleChoices;
                   }
@@ -189,15 +193,31 @@ function updateRole() {
             .then(function (response) {
                //console.log(response);
                const newRole = response.role;
-               console.log(newRole);
+               //console.log(newRole);
 
                db.query(`
-               UPDATE employee e 
-               SET e.role_id = ?
-               WHERE `)
-            })
-         })
-      })
+               SELECT * FROM role
+               WHERE title = ?`, [newRole],
+               function (err, rows) {
+                  if (err) throw err;
+                  // roleId data to be used as input data in update query
+                  let roleId = rows[0].id;
+
+                  // sql update employee query
+                  let query = `
+                  UPDATE employee SET role_id = ?
+                  WHERE CONCAT(first_name, ' ', last_name) = ?`;
+                  let values = [parseInt(roleId), employee];
+
+                  db.query(query, values, function (err, rows, fields) {
+                     console.log("Employee role updated!");
+                  });
+                  // view all employees table after updating employee
+                  allEmployees();
+               });
+            });
+         });
+      });
    });
 }
 
@@ -235,6 +255,7 @@ function addRole() {
             name: "department",
             type: "list",
             choices: function () {
+               // loop through department table to generate list of department names as choices
                const deptChoices = [];
                for (let i = 0; i < rows.length; i++) {
                   deptChoices.push(rows[i].name);
@@ -273,7 +294,7 @@ function allDepartments() {
    const query = "SELECT * FROM department";
    db.query(query, function (err, rows) {
       if (err) throw err;
-      console.table("All Departments:", rows);
+      console.table(rows);
       hr_menu();
    });
 }
@@ -297,7 +318,7 @@ function addDepartment() {
          db.query(query, function (err, rows) {
             if (err) throw err;
             console.log("New department added to table!");
-            console.table("All Departments", rows);
+            console.table(rows);
             hr_menu();
          });
       });
@@ -306,5 +327,5 @@ function addDepartment() {
 // QUIT
 function hrQuit() {
    console.log('GOODBYE');
-   db.createConnection.end();
+   db.end();
 }
