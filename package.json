@@ -9,14 +9,14 @@
     },
     "repository": {
       "type": "git",
-      "url": "git+https://github.com/jbradley84/employee-tracker.git"
+      "url": "git+https://github.com/JulianHeaney/employee-tracker.git"
     },
     "author": "",
     "license": "ISC",
     "bugs": {
-      "url": "https://github.com/jbradley84/employee-tracker/issues"
+      "url": "https://github.com/JulianHeaney/employee-tracker/issues"
     },
-    "homepage": "https://github.com/jbradley84/employee-tracker#readme",
+    "homepage": "https://github.com/JulianHeaney/employee-tracker#readme",
     "dependencies": {
       "console.table": "^0.10.0",
       "express": "^4.18.1",
